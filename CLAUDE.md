@@ -26,7 +26,7 @@ All state is local `useState`, with each piece held by the component that uses i
 - `App.jsx` owns the transactions list (hardcoded seed data, reset on every reload) and renders the three children below. The category list is a module-level constant here, passed as a prop to the form and the list.
 - `Summary.jsx` takes `transactions` and derives the totals (income, expenses, balance) on each render.
 - `TransactionForm.jsx` owns the form field state and passes each new transaction to `App` through `onAdd`.
-- `TransactionList.jsx` takes `transactions`, owns the two filters (type, category), and renders the filtered table.
+- `TransactionList.jsx` takes `transactions`, owns the two filters (type, category), and renders the filtered table. Each row has a Delete button that calls `App`'s `onDelete` with the transaction's `id`.
 - Styling is plain CSS in `src/App.css` and `src/index.css`.
 
 Transaction shape: `{ id, description, amount, type: "income" | "expense", category, date: "YYYY-MM-DD" }`. `amount` must be a **number**: the form input yields a string, so `TransactionForm`'s `handleSubmit` parses it before calling `onAdd` (otherwise the totals' `reduce` in `Summary` would concatenate strings).
