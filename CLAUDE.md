@@ -22,13 +22,14 @@ Vite 7 requires Node.js 20.19+ or 22.12+.
 
 React 19 + Vite, plain JavaScript (JSX, no TypeScript), no router, no state library, no backend or persistence.
 
-The whole app lives in a single component, `src/App.jsx`:
-- All state is local `useState`: the transactions list (hardcoded seed data, reset on every reload), the add-transaction form fields, and two filters (type, category).
-- Totals (income, expenses, balance) and the filtered list are derived on each render from `transactions`.
-- The category list is a hardcoded array in `App.jsx`, shared by the form and the filter dropdown.
+All state is local `useState`, with each piece held by the component that uses it. Components live flat in `src/`:
+- `App.jsx` owns the transactions list (hardcoded seed data, reset on every reload) and renders the three children below. The category list is a module-level constant here, passed as a prop to the form and the list.
+- `Summary.jsx` takes `transactions` and derives the totals (income, expenses, balance) on each render.
+- `TransactionForm.jsx` owns the form field state and passes each new transaction to `App` through `onAdd`.
+- `TransactionList.jsx` takes `transactions`, owns the two filters (type, category), and renders the filtered table.
 - Styling is plain CSS in `src/App.css` and `src/index.css`.
 
-Transaction shape: `{ id, description, amount, type: "income" | "expense", category, date: "YYYY-MM-DD" }`. Note that `amount` is stored as a **string** (both in the seed data and from the form input), so the `reduce` summing totals concatenates strings rather than adding numbers.
+Transaction shape: `{ id, description, amount, type: "income" | "expense", category, date: "YYYY-MM-DD" }`. `amount` must be a **number**: the form input yields a string, so `TransactionForm`'s `handleSubmit` parses it before calling `onAdd` (otherwise the totals' `reduce` in `Summary` would concatenate strings).
 
 ## Lint notes
 
