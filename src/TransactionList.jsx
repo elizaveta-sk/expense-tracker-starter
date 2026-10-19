@@ -1,4 +1,11 @@
 import { useState } from 'react'
+import { capitalize, formatDate, formatMoney } from './format'
+
+const typeFilters = [
+  { value: "all", label: "All" },
+  { value: "income", label: "Income" },
+  { value: "expense", label: "Expenses" },
+];
 
 function TransactionList({ transactions, categories, onDelete }) {
   const [filterType, setFilterType] = useState("all");
@@ -12,50 +19,83 @@ function TransactionList({ transactions, categories, onDelete }) {
     filteredTransactions = filteredTransactions.filter(t => t.category === filterCategory);
   }
 
+  // Newest first; ids break ties between transactions on the same day.
+  const sortedTransactions = [...filteredTransactions].sort(
+    (a, b) => b.date.localeCompare(a.date) || b.id - a.id
+  );
+
+  const clearFilters = () => {
+    setFilterType("all");
+    setFilterCategory("all");
+  };
+
   return (
-    <div className="transactions">
-      <h2>Transactions</h2>
-      <div className="filters">
-        <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-          <option value="all">All Types</option>
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
-        </select>
-        <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
-          <option value="all">All Categories</option>
-          {categories.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
+    <section className="panel transactions">
+      <div className="transactions-header">
+        <h2>Transactions</h2>
+        <div className="filters">
+          <div className="segmented" role="group" aria-label="Filter by type">
+            {typeFilters.map(option => (
+              <button
+                key={option.value}
+                type="button"
+                className="segment-btn"
+                aria-pressed={filterType === option.value}
+                onClick={() => setFilterType(option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+          <select
+            aria-label="Filter by category"
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          >
+            <option value="all">All categories</option>
+            {categories.map(cat => (
+              <option key={cat} value={cat}>{capitalize(cat)}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Category</th>
-            <th>Amount</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredTransactions.map(t => (
-            <tr key={t.id}>
-              <td>{t.date}</td>
-              <td>{t.description}</td>
-              <td>{t.category}</td>
-              <td className={t.type === "income" ? "income-amount" : "expense-amount"}>
-                {t.type === "income" ? "+" : "-"}${t.amount}
-              </td>
-              <td>
-                <button className="delete-btn" onClick={() => onDelete(t.id)}>Delete</button>
-              </td>
-            </tr>
+      {sortedTransactions.length === 0 ? (
+        <div className="empty-list">
+          {transactions.length === 0 ? (
+            <p>No transactions yet. Add one above to get started.</p>
+          ) : (
+            <>
+              <p>No transactions match these filters.</p>
+              <button type="button" className="text-btn" onClick={clearFilters}>Clear filters</button>
+            </>
+          )}
+        </div>
+      ) : (
+        <ul className="transaction-rows">
+          {sortedTransactions.map(t => (
+            <li key={t.id} className="transaction-row">
+              <span className="row-date">{formatDate(t.date)}</span>
+              <span className="row-main">
+                <span className="row-description">{t.description}</span>
+                <span className="row-category">{capitalize(t.category)}</span>
+              </span>
+              <span className={t.type === "income" ? "row-amount income-amount" : "row-amount expense-amount"}>
+                {t.type === "income" ? "+" : "−"}{formatMoney(t.amount)}
+              </span>
+              <button
+                type="button"
+                className="text-btn delete-btn"
+                aria-label={`Delete ${t.description}`}
+                onClick={() => onDelete(t.id)}
+              >
+                Delete
+              </button>
+            </li>
           ))}
-        </tbody>
-      </table>
-    </div>
+        </ul>
+      )}
+    </section>
   );
 }
 

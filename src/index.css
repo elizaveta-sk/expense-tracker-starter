@@ -1,3 +1,22 @@
+:root {
+  --mist: #E9EEF2;
+  --sheet: #FFFFFF;
+  --ink: #17324D;
+  --slate: #5B6B7C;
+  --line: #D3DCE4;
+  --inflow: #17805A;
+  --inflow-soft: #CDE8DC;
+  --outflow: #B9412F;
+  --focus: #2F6FB0;
+
+  --radius-panel: 14px;
+  --radius-control: 8px;
+
+  font-family: "Schibsted Grotesk", system-ui, sans-serif;
+  color: var(--ink);
+  background: var(--mist);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,7 +24,29 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background-color: #ffffff;
-  color: #333;
+  background: var(--mist);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
 }
