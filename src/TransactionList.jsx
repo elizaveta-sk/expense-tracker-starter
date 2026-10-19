@@ -11,6 +11,17 @@ function TransactionList({ transactions, categories, onDelete }) {
   const [filterType, setFilterType] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
 
+  const categoryOptions = filterType === "all"
+    ? [...new Set([...categories.expense, ...categories.income])]
+    : categories[filterType];
+
+  const handleTypeFilter = (newType) => {
+    setFilterType(newType);
+    if (newType !== "all" && !categories[newType].includes(filterCategory)) {
+      setFilterCategory("all");
+    }
+  };
+
   let filteredTransactions = transactions;
   if (filterType !== "all") {
     filteredTransactions = filteredTransactions.filter(t => t.type === filterType);
@@ -41,7 +52,7 @@ function TransactionList({ transactions, categories, onDelete }) {
                 type="button"
                 className="segment-btn"
                 aria-pressed={filterType === option.value}
-                onClick={() => setFilterType(option.value)}
+                onClick={() => handleTypeFilter(option.value)}
               >
                 {option.label}
               </button>
@@ -53,7 +64,7 @@ function TransactionList({ transactions, categories, onDelete }) {
             onChange={(e) => setFilterCategory(e.target.value)}
           >
             <option value="all">All categories</option>
-            {categories.map(cat => (
+            {categoryOptions.map(cat => (
               <option key={cat} value={cat}>{capitalize(cat)}</option>
             ))}
           </select>

@@ -13,6 +13,14 @@ export function formatDate(isoDate) {
   return shortDate.format(new Date(year, month - 1, day));
 }
 
+// Today's date as "YYYY-MM-DD" in local time. toISOString() would use UTC and can be a day off.
+export function todayISO() {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${now.getFullYear()}-${month}-${day}`;
+}
+
 export function capitalize(text) {
   return text.charAt(0).toUpperCase() + text.slice(1);
 }

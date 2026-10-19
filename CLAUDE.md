@@ -23,7 +23,7 @@ Vite 7 requires Node.js 20.19+ or 22.12+.
 React 19 + Vite, plain JavaScript (JSX, no TypeScript), no router, no state library, no backend or persistence.
 
 All state is local `useState`, with each piece held by the component that uses it. Components live flat in `src/`:
-- `App.jsx` owns the transactions list (hardcoded seed data, reset on every reload) and renders the three children below. The category list is a module-level constant here, passed as a prop to the form and the list.
+- `App.jsx` owns the transactions list (hardcoded seed data, reset on every reload) and renders the three children below. The categories are a module-level constant here, `{ expense: [...], income: [...] }`, passed as a prop to the form (which offers only the list matching the selected type) and the list.
 - `Summary.jsx` takes `transactions` and derives the totals (income, expenses, balance) on each render.
 - `TransactionForm.jsx` owns the form field state and passes each new transaction to `App` through `onAdd`.
 - `TransactionList.jsx` takes `transactions`, owns the two filters (type, category), and renders the filtered table. Each row has a Delete button that calls `App`'s `onDelete` with the transaction's `id`.

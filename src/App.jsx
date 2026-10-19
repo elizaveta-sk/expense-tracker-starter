@@ -5,7 +5,10 @@ import TransactionForm from './TransactionForm'
 import TransactionList from './TransactionList'
 import './App.css'
 
-const categories = ["food", "housing", "utilities", "transport", "entertainment", "salary", "other"];
+const categories = {
+  expense: ["food", "housing", "utilities", "transport", "entertainment", "other"],
+  income: ["salary", "other"],
+};
 
 function App() {
   const [transactions, setTransactions] = useState([

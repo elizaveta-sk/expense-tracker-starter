@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { capitalize } from './format'
+import { capitalize, todayISO } from './format'
 
 const types = [
   { value: "expense", label: "Expense" },
@@ -10,25 +10,33 @@ function TransactionForm({ categories, onAdd }) {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
-  const [category, setCategory] = useState("food");
+  const [category, setCategory] = useState(categories.expense[0]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!description || !amount) return;
+    const trimmedDescription = description.trim();
+    if (!trimmedDescription || !amount) return;
 
     onAdd({
       id: Date.now(),
-      description,
+      description: trimmedDescription,
       amount: parseFloat(amount),
       type,
       category,
-      date: new Date().toISOString().split('T')[0],
+      date: todayISO(),
     });
 
     setDescription("");
     setAmount("");
     setType("expense");
-    setCategory("food");
+    setCategory(categories.expense[0]);
+  };
+
+  const handleTypeChange = (newType) => {
+    setType(newType);
+    if (!categories[newType].includes(category)) {
+      setCategory(categories[newType][0]);
+    }
   };
 
   return (
@@ -45,7 +53,7 @@ function TransactionForm({ categories, onAdd }) {
                   name="type"
                   value={option.value}
                   checked={type === option.value}
-                  onChange={(e) => setType(e.target.value)}
+                  onChange={(e) => handleTypeChange(e.target.value)}
                 />
                 <span>{option.label}</span>
               </label>
@@ -59,7 +67,14 @@ function TransactionForm({ categories, onAdd }) {
             type="text"
             placeholder="e.g. Coffee with Sam"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              e.target.setCustomValidity("");
+            }}
+            onInvalid={(e) => {
+              if (e.target.value) e.target.setCustomValidity("Enter a description.");
+            }}
+            pattern=".*\S.*"
             required
           />
         </label>
@@ -85,7 +100,7 @@ function TransactionForm({ categories, onAdd }) {
           <label className="field">
             <span className="field-label">Category</span>
             <select value={category} onChange={(e) => setCategory(e.target.value)}>
-              {categories.map(cat => (
+              {categories[type].map(cat => (
                 <option key={cat} value={cat}>{capitalize(cat)}</option>
               ))}
             </select>

@@ -10,7 +10,7 @@ function Summary({ transactions }) {
     .reduce((sum, t) => sum + t.amount, 0);
 
   const balance = totalIncome - totalExpenses;
-  const spentShare = totalIncome > 0 ? Math.min(totalExpenses / totalIncome, 1) : 1;
+  const spentShare = totalIncome > 0 ? Math.min(totalExpenses / totalIncome, 1) : 0;
   const hasActivity = totalIncome > 0 || totalExpenses > 0;
 
   let headline;
@@ -28,7 +28,8 @@ function Summary({ transactions }) {
     <section className="summary" aria-label="Summary">
       <p className="summary-headline">{headline}</p>
 
-      {hasActivity && (
+      {/* The bar compares spending to income, so it needs some income to mean anything. */}
+      {totalIncome > 0 && (
         <>
           <div
             className="balance-bar"
@@ -46,9 +47,7 @@ function Summary({ transactions }) {
               <span className="swatch swatch-left" aria-hidden="true" />
               Left <strong>{formatMoney(Math.max(balance, 0))}</strong>
             </span>
-            {totalIncome > 0 && (
-              <span className="legend-share">{Math.round((totalExpenses / totalIncome) * 100)}% of income</span>
-            )}
+            <span className="legend-share">{Math.round((totalExpenses / totalIncome) * 100)}% of income</span>
           </div>
         </>
       )}
